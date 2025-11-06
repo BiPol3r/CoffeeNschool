@@ -10,7 +10,7 @@ public class Add2Numbers extends JFrame{
 
    public Add2Numbers(){
 
-    initializeFrame();
+    mainFrame();
     initializeComponents();
     panel();
     addToPanel();
@@ -20,7 +20,7 @@ public class Add2Numbers extends JFrame{
     setVisible(true);
    }
 
-        private void initializeFrame(){
+        private void mainFrame(){
             setTitle("Add Two Number");
             setSize(400, 300);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
