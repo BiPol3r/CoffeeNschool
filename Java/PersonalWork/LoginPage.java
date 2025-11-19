@@ -1,129 +1,108 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;t
+import java.sql.SQLException;
 
-public class LoginPage extends JFrame{
-    private JButton button;
-    private JTextField emailField, fullNameField, phoneNumberfield;
+public class LoginPage extends JFrame {
+    private JButton loginButton;
+    private JTextField emailField;
     private JPasswordField passwordField;
-    private JComboBox countryBox;
     private JPanel mainPanel, centerPanel;
 
-    public LoginPage(){
+    public LoginPage() {
         mainFrame();
-        mainPanel();
+        Panels();
         initializeComponents();
-        addEventHandler();
         addToPanel();
-        add(mainPanel);
+        addEventHandler();
 
+        setContentPane(mainPanel);
         setVisible(true);
     }
 
-        private void mainFrame(){
-            setTitle("Zuko's Log In Page");
-            setSize(450, 450);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setResizable(false);
-            setLocationRelativeTo(null);
-            
-        }
-        private void mainPanel(){
-            mainPanel = new JPanel();
-            mainPanel.setLayout(new BorderLayout());
+    private void mainFrame() {
+        setTitle("Login - Welcome Back");
+        setSize(450, 350);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+    }
 
-            centerPanel = new JPanel();
-            centerPanel.setLayout(new FlowLayout(20));
-            centerPanel.setBackground(new Color(2,4,54));
+    private void Panels() {
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
 
-            mainPanel.add(centerPanel, BorderLayout.CENTER);
-            
-            
-        }
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new FlowLayout());
+        centerPanel.setBackground(new Color(2, 4, 54));
 
-        private void initializeComponents(){
-            button = new JButton("Login");
-            emailField = new JTextField(20);
-            fullNameField = new JTextField(20);
-            phoneNumberfield = new JTextField(20);
-            passwordField = new JPasswordField(20);
-            countryBox = new JComboBox( new String[]{"USA", "UK", "Canada", "Australia"});
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+    }
 
-        }
+    private void initializeComponents() {
+        loginButton = new JButton("Login");
+        emailField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+    }
 
-        private void addToPanel(){
-            JLabel nameLable = new JLabel("Full Name: ");
-            nameLable.setForeground(Color.WHITE);
-            centerPanel.add(nameLable);
-            centerPanel.add(fullNameField);
+    private void addToPanel() {
+        // Title
+        JLabel titleLabel = new JLabel("Login to Your Account");
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        centerPanel.add(titleLabel);
+        centerPanel.add(Box.createHorizontalStrut(800)); // Keeping EXACT as yours
 
-            JLabel emailLabel = new JLabel("Email: ");
-            emailLabel.setForeground(Color.WHITE);
-            centerPanel.add(emailLabel);
-            centerPanel.add(emailField);
-            centerPanel.add(Box.createHorizontalStrut(10));
+        // Email
+        JLabel emailLabel = new JLabel("Email: ");
+        emailLabel.setForeground(Color.WHITE);
+        centerPanel.add(emailLabel);
+        centerPanel.add(emailField);
 
-            JLabel phoneLabel = new JLabel("Phone Number: ");
-            phoneLabel.setForeground(Color.WHITE);
-            centerPanel.add(phoneLabel);
-            centerPanel.add(phoneNumberfield);
-            centerPanel.add(Box.createHorizontalStrut(10));
+        // Password
+        JLabel passwordLabel = new JLabel("Password: ");
+        passwordLabel.setForeground(Color.WHITE);
+        centerPanel.add(passwordLabel);
+        centerPanel.add(passwordField);
 
-            JLabel passwordLabel = new JLabel("Password: ");
-            passwordLabel.setForeground(Color.WHITE);
-            centerPanel.add(passwordLabel);
-            centerPanel.add(passwordField);
-            centerPanel.add(Box.createHorizontalStrut(10));
+        // Login Button
+        centerPanel.add(Box.createHorizontalStrut(400)); // Keeping EXACT
+        centerPanel.add(loginButton);
 
+        // Sign Up Link
+        JLabel signUpLink = new JLabel("<html><u>Don't have an account? Sign up here</u></html>");
+        signUpLink.setForeground(Color.GREEN);
+        signUpLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        signUpLink.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dispose();
+                new SignUpPage();
+            }
+        });
+        centerPanel.add(signUpLink);
+    }
 
-            JLabel countryLabel = new JLabel("Country: ");
-            countryLabel.setForeground(Color.WHITE);
-            centerPanel.add(countryLabel);
-            centerPanel.add(countryBox);
-            centerPanel.add(Box.createHorizontalStrut(10));
-
-            centerPanel.add(button);
-
-        }
-       private void addEventHandler() {
-    button.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-            // Check empty fields
-            if (emailField.getText().isEmpty() ||
-                fullNameField.getText().isEmpty() ||
-                phoneNumberfield.getText().isEmpty() ||
-                passwordField.getPassword().length == 0) {
-
-                JOptionPane.showMessageDialog(mainPanel, "All fields are required!");
+    private void addEventHandler() {
+        loginButton.addActionListener(e -> {
+            if (emailField.getText().isEmpty() || passwordField.getPassword().length == 0) {
+                JOptionPane.showMessageDialog(this, "Please enter both email and password!",
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            // Retrieve user input
-            String email = emailField.getText();
-            String fullName = fullNameField.getText();
-            String phoneNumber = phoneNumberfield.getText();
+            String email = emailField.getText().trim().toLowerCase();
             String password = new String(passwordField.getPassword());
-            String country = (String) countryBox.getSelectedItem();
 
-            // For now just show success
-            JOptionPane.showMessageDialog(mainPanel,
-                    "Login Successful!\n" +
-                    "Email: " + email + "\n" +
-                    "Full Name: " + fullName + "\n" +
-                    "Phone: " + phoneNumber + "\n" +
-                    "Country: " + country);
+            try {
+                boolean success = DBHelper.loginUser(email, password);
 
-            System.exit(0);
-        }
-    });
-}
-
-
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(() -> new LoginPage());
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Login successful!\nWelcome back!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid email or password.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "DB error: " + ex.getMessage());
+            }
+        });
     }
-
 }

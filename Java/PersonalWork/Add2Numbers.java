@@ -24,7 +24,7 @@ public class Add2Numbers extends JFrame{
             setTitle("Add Two Number");
             setSize(400, 300);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setResizable(false);
+            //setResizable(false);
             setLocationRelativeTo(null);
         }
 
@@ -34,13 +34,13 @@ public class Add2Numbers extends JFrame{
             topPanel = new JPanel();
             centerPanel = new JPanel();
 
-            centerPanel.setLayout(new FlowLayout(20));
+            centerPanel.setLayout(new FlowLayout());
             topPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
             centerPanel.setBackground(new Color(30,62,115));
             topPanel.setBackground(new Color(200, 200, 200));
 
-            mainPanel.add(topPanel,BorderLayout.NORTH);
+            mainPanel.add(topPanel,BorderLayout.EAST);
             mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         }
@@ -68,7 +68,8 @@ public class Add2Numbers extends JFrame{
             centerPanel.add(label); 
         }
 
-        private void performedAddition(){
+       /*
+       private void performedAddition(){
             try{
                 double num1 = Double.parseDouble(textField1.getText());
                 double num2 = Double.parseDouble(textField2.getText());
@@ -77,13 +78,21 @@ public class Add2Numbers extends JFrame{
             } catch(NumberFormatException ex){
                 label.setText("Please Enter valid numbers!");
             }
-        }
+        } */ 
 
         private void eventHandler(){
             button.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    performedAddition();
+                   // private void performedAddition(){
+            try{
+                double num1 = Double.parseDouble(textField1.getText());
+                double num2 = Double.parseDouble(textField2.getText());
+                double sum = num1 + num2;
+                label.setText("Result: " + sum);
+            } catch(NumberFormatException ex){
+                label.setText("Please Enter valid numbers!");
+            }
                 }
             });
         }
